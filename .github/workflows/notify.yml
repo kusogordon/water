@@ -1,0 +1,22 @@
+name: 喝水提醒
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 台北 8:00
+    - cron: '0 1 * * *'   # 台北 9:00
+    - cron: '30 3 * * *'  # 台北 11:30
+    - cron: '0 5 * * *'   # 台北 13:00
+    - cron: '30 7 * * *'  # 台北 15:30
+    - cron: '30 9 * * *'  # 台北 17:30
+    - cron: '0 11 * * *'  # 台北 19:00
+    - cron: '0 13 * * *'  # 台北 21:00
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 發送 LINE 提醒
+        run: |
+          curl -X POST https://notify-api.line.me/api/notify \
+          -H "Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}" \
+          -F "message=喝水提醒：該補充水分啦！💧"
