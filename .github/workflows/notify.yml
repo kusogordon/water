@@ -2,6 +2,7 @@ name: 喝水提醒
 
 on:
   schedule:
+    # 台北時間 (UTC+8) 對應的 UTC 時間
     - cron: '0 0 * * *'   # 台北 8:00
     - cron: '0 1 * * *'   # 台北 9:00
     - cron: '30 3 * * *'  # 台北 11:30
@@ -14,9 +15,24 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
+      # 設定時區為 UTC，避免偏差
+      - name: 設定時區為 UTC
+        run: sudo timedatectl set-timezone UTC
+
+      # 記錄目前執行的時間，用於日誌和調試
+      - name: 記錄執行時間
+        run: echo "工作流程觸發於 $(date -u)"
+
+      # 發送 LINE 提醒訊息
       - name: 發送 LINE 提醒
         run: |
+          echo "發送提醒：該補充水分了！"
           curl -X POST https://notify-api.line.me/api/notify \
           -H "Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}" \
-          -F "message=喝水提醒：該補充水分啦！💧💧💧"
+          -F "message=喝水提醒：該補充水分啦！💧"
+
+      # 確保執行流程結束的日誌記錄
+      - name: 記錄執行結束
+        run: echo "工作流程已完成於 $(date -u)"
